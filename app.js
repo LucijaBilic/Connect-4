@@ -1,11 +1,19 @@
 class GameManager {
     gameBoard;
+    /**
+     * @type {{ target: HTMLElement, player: "red" | "yellow"}[][]} 
+     * Matrix containing disc elements and the player that chose them
+     */
     discs;
     /**
      * @type {"red" | "yellow"} A string representing the current player
      */
     playerTurn;
+    isGameFinished;
     constructor () {
+        this.playerTurn = "yellow";
+        this.isGameFinished = false;
+
         this.gameBoard = document.getElementById("game-board");
         this.discs = [];
         
@@ -21,8 +29,6 @@ class GameManager {
                 this.discs[columnIndex].push({target: disc, player: ''});
             }
         }
-
-        this.playerTurn = "yellow";
     }
     findEmptyRowByColumnIndex (columnIndex) {
         return this.discs.findIndex(discRow =>
@@ -31,7 +37,22 @@ class GameManager {
             return discRow[columnIndex].player === '';
         });
     }
+    checkIfFourInARow (sequence) {
+        let currentPlayerColorCounter = 0;
+
+        return sequence.some(sequenceEl => {
+            if (sequenceEl.player === this.playerTurn) {
+                currentPlayerColorCounter++;
+            } else {
+                currentPlayerColorCounter = 0;
+            }
+
+            return currentPlayerColorCounter === 4;
+        })
+    }
     handleClick = ({ target: clickedDisc }) => {
+        if (this.isGameFinished) return;
+
         const clickedDiscId = clickedDisc.id;
         console.log(clickedDiscId);
 
@@ -49,6 +70,28 @@ class GameManager {
 
         addedDisc.target.classList.add(`player-${ this.playerTurn }`);
         addedDisc.player = this.playerTurn;
+
+        ////
+
+        const currentRow = this.discs[emptyRowIndex];
+        console.log(currentRow);
+
+        const currentColumn = this.discs.map(row => row[ clickedDiscColumn ]);
+        console.log(currentColumn);
+        
+        const isPlayerWinner = [ currentRow, currentColumn ].some(sequence => this.checkIfFourInARow(sequence));
+        
+        // const winnerRow = this.checkIfFourInARow(currentRow);
+        // console.log(winnerRow, this.playerTurn);
+        // const winnerColumn = this.checkIfFourInARow(currentColumn);
+        // console.log(winnerColumn, this.playerTurn);
+
+        if (isPlayerWinner) {
+            this.isGameFinished = true;
+            alert(this.playerTurn);
+        }
+
+        ////
 
         this.playerTurn = this.playerTurn === "yellow" ? "red" : "yellow";
     }

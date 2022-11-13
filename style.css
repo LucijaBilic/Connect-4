@@ -1,0 +1,40 @@
+body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: yellowgreen;
+}
+
+.game-board {
+    width: 35rem;
+    height: 30rem;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 0.5rem;
+
+    background-color: palevioletred;
+}
+
+.disc {
+    border-radius: 50%;
+    
+    background-color: white;
+}
+
+.player-yellow {
+    background-color: yellow;
+}
+
+.player-red {
+    background-color: red;
+}

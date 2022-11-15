@@ -33,11 +33,69 @@ class GameManager {
     findEmptyRowByColumnIndex (columnIndex) {
         return this.discs.findIndex(discRow =>
         {
-            console.log(discRow[columnIndex])
+            // console.log(discRow[columnIndex])
             return discRow[columnIndex].player === '';
         });
     }
+    getRightDiagonal (emptyRowIndex, clickedDiscColumn) {
+        let edgeRowPoint,
+            edgeColumnPoint,
+            lowerPoint,
+            columnCounter,
+            rowCounter,
+            rightDiagonalDiscs = [];
+        
+        lowerPoint = (emptyRowIndex >= clickedDiscColumn) ? clickedDiscColumn : emptyRowIndex;
+        
+        edgeRowPoint = emptyRowIndex - lowerPoint;
+        edgeColumnPoint = clickedDiscColumn - lowerPoint;
+        // console.log(edgeRowPoint, edgeColumnPoint);
+
+        columnCounter = edgeColumnPoint;
+        rowCounter = edgeRowPoint;
+
+        while (rowCounter <= 5 && columnCounter <= 6) {
+                rightDiagonalDiscs.push(this.discs[ rowCounter ][ columnCounter ]);
+                rowCounter++;
+                columnCounter++;
+            }
+        // console.log("diagonal", rightDiagonalDiscs);
+
+        return rightDiagonalDiscs;
+    }
+    getLeftDiagonal (emptyRowIndex, clickedDiscColumn) {
+        let edgeRowPoint,
+            edgeColumnPoint,
+            sum,
+            columnCounter,
+            rowCounter,
+            leftDiagonalDiscs = [];
+        
+        sum = emptyRowIndex + clickedDiscColumn;
+
+        if (sum > 5) {
+            edgeRowPoint = 5;
+            edgeColumnPoint = sum - 5;
+            // console.log(edgeRowPoint, edgeColumnPoint);
+        } else {
+            edgeRowPoint = sum;
+            edgeColumnPoint = 0;
+        }
+
+        columnCounter = edgeColumnPoint;
+        rowCounter = edgeRowPoint;
+
+        while (rowCounter >= 0 && columnCounter <= 6) {
+            leftDiagonalDiscs.push(this.discs[ rowCounter ][ columnCounter ]);
+            rowCounter--;
+            columnCounter++;
+        };
+        // console.log("left diagonal", leftDiagonalDiscs);
+
+        return leftDiagonalDiscs;
+    }
     checkIfFourInARow (sequence) {
+        // console.log("sequence", sequence);
         let currentPlayerColorCounter = 0;
 
         return sequence.some(sequenceEl => {
@@ -54,13 +112,11 @@ class GameManager {
         if (this.isGameFinished) return;
 
         const clickedDiscId = clickedDisc.id;
-        console.log(clickedDiscId);
-
+        // console.log("clickedDiscId", clickedDiscId);
         const clickedDiscColumn = clickedDisc.id % 7;
-        console.log(clickedDiscColumn);
-
+        // console.log("clickedDiscColumn", clickedDiscColumn);
         const emptyRowIndex = this.findEmptyRowByColumnIndex(clickedDiscColumn);
-        console.log(emptyRowIndex);
+        // console.log("emptyRowIndex", emptyRowIndex);
 
         if (emptyRowIndex === -1) { 
             return;
@@ -71,27 +127,20 @@ class GameManager {
         addedDisc.target.classList.add(`player-${ this.playerTurn }`);
         addedDisc.player = this.playerTurn;
 
-        ////
-
         const currentRow = this.discs[emptyRowIndex];
-        console.log(currentRow);
-
+        // console.log("curent row: ", currentRow);
         const currentColumn = this.discs.map(row => row[ clickedDiscColumn ]);
-        console.log(currentColumn);
-        
-        const isPlayerWinner = [ currentRow, currentColumn ].some(sequence => this.checkIfFourInARow(sequence));
-        
-        // const winnerRow = this.checkIfFourInARow(currentRow);
-        // console.log(winnerRow, this.playerTurn);
-        // const winnerColumn = this.checkIfFourInARow(currentColumn);
-        // console.log(winnerColumn, this.playerTurn);
+        // console.log("curent column: ", currentColumn);
 
+        const currentRightDiagonal = this.getRightDiagonal(emptyRowIndex, clickedDiscColumn);
+        const currentLeftDiagonal = this.getLeftDiagonal(emptyRowIndex, clickedDiscColumn);
+        
+        const isPlayerWinner = [ currentRow, currentColumn, currentRightDiagonal, currentLeftDiagonal ].some(sequence => this.checkIfFourInARow(sequence));
+        
         if (isPlayerWinner) {
             this.isGameFinished = true;
             alert(this.playerTurn);
         }
-
-        ////
 
         this.playerTurn = this.playerTurn === "yellow" ? "red" : "yellow";
     }

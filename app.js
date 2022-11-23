@@ -123,6 +123,11 @@ class GameManager {
         }
 
         const addedDisc = this.discs[ emptyRowIndex ][ clickedDiscColumn ];
+        
+        if (isPlayerWinner) {
+            this.isGameFinished = true;
+            alert(this.playerTurn);
+        }
 
         addedDisc.target.classList.add(`player-${ this.playerTurn }`);
         addedDisc.player = this.playerTurn;
@@ -137,10 +142,7 @@ class GameManager {
         
         const isPlayerWinner = [ currentRow, currentColumn, currentRightDiagonal, currentLeftDiagonal ].some(sequence => this.checkIfFourInARow(sequence));
         
-        if (isPlayerWinner) {
-            this.isGameFinished = true;
-            alert(this.playerTurn);
-        }
+        
 
         this.playerTurn = this.playerTurn === "yellow" ? "red" : "yellow";
     }
